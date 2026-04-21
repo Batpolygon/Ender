@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { background: #fff; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+        .logo { width: 100px; height: 100px; background: #0084ff; border-radius: 50%; margin-bottom: 20px; animation: pulse 2s infinite; }
+        h2 { color: #0084ff; margin-bottom: 30px; font-weight: 800; font-size: 1.5em; }
+        .download-box { width: 85%; max-width: 450px; margin-bottom: 20px; }
+        .label { font-size: 0.85em; font-weight: 800; color: #64748b; margin-bottom: 8px; display: flex; justify-content: space-between; text-transform: uppercase; letter-spacing: 0.5px;}
+        .progress-bg { width: 100%; height: 10px; background: #f1f5f9; border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; width: 0%; background: #0084ff; transition: width 0.3s ease; }
+        @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.8; } }
+    </style>
+</head>
+<body>
+    <div class="logo"></div>
+    <h2>Initialisation des Systèmes</h2>
+
+    <div class="download-box" id="box-llm">
+        <div class="label"><span>🧠 Cerveau Principal (DeepSeek-R1)</span><span id="perc-llm">0%</span></div>
+        <div class="progress-bg"><div id="bar-llm" class="progress-fill"></div></div>
+    </div>
+
+    <!-- NOUVELLE BARRE POUR L'EXPERT ÉMOTION -->
+    <div class="download-box" id="box-emotion">
+        <div class="label"><span>❤️ Expert Émotion (Lexi-Llama)</span><span id="perc-emotion">0%</span></div>
+        <div class="progress-bg"><div id="bar-emotion" class="progress-fill"></div></div>
+    </div>
+
+    <div class="download-box" id="box-joy-txt">
+        <div class="label"><span>👁️ Cerveau Vision (JoyCaption Text)</span><span id="perc-joy-txt">0%</span></div>
+        <div class="progress-bg"><div id="bar-joy-txt" class="progress-fill"></div></div>
+    </div>
+
+    <div class="download-box" id="box-joy-vis">
+        <div class="label"><span>🔭 Projecteur Vision (JoyCaption Proj)</span><span id="perc-joy-vis">0%</span></div>
+        <div class="progress-bg"><div id="bar-joy-vis" class="progress-fill"></div></div>
+    </div>
+
+    <script>
+        function updateProgress(id, percentage) {
+            const bar = document.getElementById('bar-' + id);
+            const text = document.getElementById('perc-' + id);
+            if(bar && text) {
+                bar.style.width = percentage + '%';
+                text.innerText = percentage + '%';
+                if(percentage === 100) {
+                    bar.style.backgroundColor = '#00ff88'; // Passe au vert quand c'est fini
+                }
+            }
+        }
+    </script>
+</body>
+</html>

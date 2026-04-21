@@ -1,0 +1,22 @@
+# --- SERVEUR & API ---
+fastapi
+uvicorn
+pydantic
+python-multipart
+
+# --- INTERFACE DESKTOP ---
+pywebview
+
+# --- MOTEUR IA (GGUF & VISION) ---
+llama-cpp-python
+
+# --- TRAITEMENT DE DOCUMENTS (RAG) ---
+pypdf
+
+# --- NAVIGATION WEB (URL CONTEXT) ---
+beautifulsoup4
+requests
+
+# --- TRAITEMENT D'IMAGE & LAUNCHER ---
+Pillow
+tqdm

@@ -1,0 +1,341 @@
+/* ==============================================================================
+ 1 . RESET ET CONFIGURATION GÉNÉRALE                                  *
+ ============================================================================== */
+* {
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body, html {
+    margin: 0; padding: 0;
+    height: 100%; width: 100%;
+    font-family: 'Inter', -apple-system, system-ui, sans-serif;
+    background-color: #ffffff;
+    overflow: hidden; /* Empêche le scroll global de la fenêtre principale */
+}
+
+/* ==============================================================================
+ 2 . OVERLAY DRAG N DROP (Z-INDEX 5000)                               *
+ ============================================================================== */
+.drop-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 132, 255, 0.1);
+    backdrop-filter: blur(12px); /* Effet de flou moderne */
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 5000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    border: 8px dashed #0084ff;
+    transition: all 0.3s ease;
+}
+
+.drop-overlay.active {
+    display: flex;
+    animation: fadeInDrop 0.25s ease-out;
+}
+
+.drop-message {
+    text-align: center;
+    background: white;
+    padding: 40px 60px;
+    border-radius: 40px;
+    box-shadow: 0 20px 60px rgba(0, 132, 255, 0.2);
+}
+
+.drop-icon { font-size: 5em; display: block; margin-bottom: 15px; }
+.drop-message p { font-weight: 900; font-size: 1.4em; color: #0084ff; margin: 0; }
+
+@keyframes fadeInDrop {
+    from { opacity: 0; transform: scale(1.05); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* ==============================================================================
+ 3 . STRUCTURE CENTRALE ET HUD                                        *
+ ============================================================================== */
+.main-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+    z-index: 10;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 650px;
+}
+
+/* ==============================================================================
+ 4 . JAUGE D'HUMEUR                                                   *
+ ============================================================================== */
+.mood-header {
+    width: 250px;
+    margin: 0 auto 40px auto;
+    text-align: center;
+}
+
+.mood-title {
+    font-size: 0.75em; font-weight: 900; color: #0084ff;
+    letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px;
+}
+
+.mood-bar {
+    width: 100%; height: 12px; background: #f0f2f5;
+    border-radius: 20px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.mood-filler {
+    height: 100%; width: 100%;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.5s ease;
+}
+
+/* Couleurs selon l'état d'Ender */
+#app.content .mood-filler { background-color: #00ff88; }
+#app.neutre .mood-filler  { background-color: #ffcc00; }
+#app.triste .mood-filler  { background-color: #ff3b30; }
+
+/* ==============================================================================
+ 5 . VISAGE D'ENDER (PROPORTIONS FIDÈLES : YEUX BAS)                  *
+ ============================================================================== */
+.face {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+    transition: transform 0.4s ease;
+}
+
+.eyes {
+    display: flex;
+    gap: 75px;
+    margin-bottom: 5px; /* Yeux très bas, collés à la bouche */
+    position: relative;
+}
+
+.eye {
+    width: 105px;
+    height: 105px;
+    background-color: #0084ff;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    transform-origin: center;
+}
+
+/* La bouche (Sourire fin par défaut) */
+.mouth {
+    width: 110px;
+    height: 25px;
+    border-bottom: 10px solid #0084ff;
+    border-radius: 0 0 100px 100px;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform-origin: top center;
+}
+
+/* --- EXPRESSIONS ANIMÉES --- */
+
+/* Parle (Bouche ouverte et pleine) */
+.mouth.talking {
+    background-color: #0084ff;
+    height: 65px;
+    border-bottom: none;
+}
+
+/* Clignement aléatoire */
+.eye.blink { transform: scaleY(0.05) !important; }
+
+/* Analyse du ton (Yeux plissés) */
+.face.analyzing .eye { transform: scaleY(0.6); }
+
+/* Vision / Scan (Mouvement horizontal saccadé) */
+.face.looking .eye { animation: scanning 1.2s infinite alternate ease-in-out; }
+@keyframes scanning {
+    from { transform: translateX(-18px); }
+    to { transform: translateX(18px); }
+}
+
+/* Réflexion (Yeux en haut et balancement) */
+.face.thinking .eye { transform: translateY(-20px) scale(0.95); }
+.face.thinking { animation: pondering 2.5s infinite ease-in-out; }
+@keyframes pondering {
+    0%, 100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+}
+
+/* Formes de bouche selon le mood (au repos) */
+#app.neutre .mouth { height: 0px; border-bottom: 8px solid #0084ff; border-radius: 0; margin-top: 20px; }
+#app.triste .mouth { height: 30px; border-top: 10px solid #0084ff; border-radius: 100px 100px 0 0; border-bottom: none; margin-top: 30px; }
+
+/* ==============================================================================
+ 6 . PANNEAUX LATÉRAUX (GAUCHE & DROITE)                              *
+ ============================================================================== */
+.side-panel {
+    position: fixed;
+    top: 0;
+    width: 350px;
+    height: 100%;
+    background: #ffffff;
+    z-index: 2000;
+    transition: transform 0.45s cubic-bezier(0.77, 0, 0.175, 1);
+    padding: 90px 30px 30px;
+    overflow-y: auto;
+    box-shadow: 0 0 40px rgba(0,0,0,0.08);
+}
+
+.side-panel.left { left: 0; transform: translateX(-100%); border-right: 1px solid #f1f5f9; }
+.side-panel.right { right: 0; transform: translateX(100%); border-left: 1px solid #f1f5f9; }
+
+/* Ouverture des panneaux via JS */
+.side-panel.open { transform: translateX(0) !important; }
+
+/* Boutons de toggle (Priorité absolue Z-index 3000) */
+#history-toggle, #settings-toggle {
+position: fixed;
+top: 25px;
+padding: 12px 15px;
+z-index: 3000;
+background: #f8fafc;
+border: 1px solid #e2e8f0;
+border-radius: 14px;
+cursor: pointer;
+font-size: 1.2em;
+transition: all 0.2s ease;
+box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+#history-toggle { left: 25px; }
+#settings-toggle { right: 25px; }
+#history-toggle:hover, #settings-toggle:hover { background: #f1f5f9; transform: scale(1.1); }
+
+/* ==============================================================================
+ 7 . INTERFACE DES PARAMÈTRES (PREMIUM SELECTS)                       *
+ ============================================================================== */
+.side-panel h3 { font-size: 1.5em; color: #1e293b; margin-bottom: 30px; border-bottom: 3px solid #0084ff; padding-bottom: 10px; display: inline-block; }
+.setting-group { margin-bottom: 25px; }
+.setting-group label { display: block; font-size: 0.8em; font-weight: 800; color: #64748b; margin-bottom: 10px; text-transform: uppercase; }
+
+select {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 0.95em;
+    color: #1e293b;
+    background-color: #f8fafc;
+    border: 2px solid #f1f5f9;
+    border-radius: 15px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230084ff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    transition: border-color 0.2s;
+}
+select:hover { border-color: #0084ff; background-color: #fff; }
+
+/* Switch Son */
+.checkbox-wrapper { display: flex; align-items: center; gap: 12px; }
+.switch { position: relative; display: inline-block; width: 44px; height: 22px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: #0084ff; }
+input:checked + .slider:before { transform: translateX(22px); }
+
+#apply-settings {
+width: 100%; padding: 16px; background: #0084ff; color: white;
+border: none; border-radius: 15px; font-weight: 800; cursor: pointer;
+box-shadow: 0 6px 20px rgba(0, 132, 255, 0.2); transition: 0.3s;
+}
+#apply-settings:hover { background: #0073e6; transform: translateY(-2px); }
+
+/* ==============================================================================
+ 8 . ZONE DE CHAT ET APERÇUS (RAG & VISION)                           *
+ ============================================================================== */
+.display-area {
+    width: 100%; flex-grow: 1; max-height: 250px; padding: 25px;
+    background: #f8fafc; border-radius: 25px; margin-bottom: 25px;
+    overflow-y: auto; font-size: 1.1em; line-height: 1.6; text-align: left;
+    border: 1px solid #f1f5f9; color: #334155;
+}
+
+/* Images Markdown générées par l'IA */
+.display-area img {
+    max-width: 100%; border-radius: 15px; margin: 15px 0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* --- BOÎTE DE PENSÉE INTERNE (THINKING MODE DEEPSEEK) --- */
+.thinking-box {
+    background-color: #f1f5f9;
+    border-left: 4px solid #94a3b8;
+    padding: 15px;
+    margin: 10px 0 20px 0;
+    border-radius: 0 15px 15px 0;
+    font-size: 0.9em;
+    color: #64748b;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+.thinking-box b { color: #475569; display: inline-block; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.85em; }
+.thinking-box i { font-style: italic; line-height: 1.5; }
+
+/* Prévisualisation des fichiers avant envoi */
+.preview-container {
+    position: absolute; bottom: 110px; background: white;
+    padding: 12px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    z-index: 100; border: 1px solid #eee;
+}
+
+#img-preview { height: 90px; border-radius: 12px; display: block; }
+
+#file-info-preview {
+display: flex; flex-direction: column; align-items: center;
+padding: 5px 15px; min-width: 130px;
+}
+.file-icon { font-size: 2.5em; margin-bottom: 5px; }
+#file-name-text { font-size: 0.8em; font-weight: 800; color: #64748b; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.cancel-img {
+    position: absolute; top: -12px; right: -12px;
+    background: #ff3b30; color: white; width: 26px; height: 26px;
+    border-radius: 50%; display: flex; justify-content: center; align-items: center;
+    cursor: pointer; border: 2px solid white; font-weight: bold; font-size: 12px;
+}
+
+/* ==============================================================================
+ 9 . BARRE DE SAISIE (INPUT)                                          *
+ ============================================================================== */
+.input-bar { display: flex; width: 100%; gap: 15px; margin-bottom: 10px; }
+
+.vision-btn {
+    background: #f1f5f9; padding: 15px 18px; border-radius: 18px;
+    cursor: pointer; border: 1px solid #e2e8f0; font-size: 1.3em; transition: 0.2s;
+}
+.vision-btn:hover { background: #e2e8f0; transform: scale(1.05); }
+
+input[type="text"] {
+    flex-grow: 1; padding: 18px 25px; border: 2px solid #edeff2;
+    border-radius: 20px; font-size: 1.1em; outline: none; transition: border-color 0.3s;
+}
+input[type="text"]:focus { border-color: #0084ff; }
+
+button#action-btn {
+    min-width: 140px; border: none; border-radius: 20px;
+    color: white; font-weight: 800; cursor: pointer; transition: 0.3s;
+}
+
+.send-mode { background: #0084ff; }
+.stop-mode { background: #ff3b30 !important; box-shadow: 0 4px 15px rgba(255, 59, 48, 0.3); }
+
+/* Scrollbar Personnalisée */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: #d1d8e0; border-radius: 10px; }

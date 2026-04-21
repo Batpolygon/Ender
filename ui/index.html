@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ender AI - Neural Engine 2026</title>
+
+    <!-- Design Premium -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Support Markdown & Rendu de code -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+    <!-- OVERLAY DRAG N DROP -->
+    <div id="drop-overlay" class="drop-overlay">
+        <div class="drop-message">
+            <span class="drop-icon">📥</span>
+            <p>Donner ce fichier à Ender</p>
+        </div>
+    </div>
+
+    <!-- BOUTONS DE CONTRÔLE -->
+    <button id="history-toggle" title="Historique">📜</button>
+    <button id="settings-toggle" title="Paramètres">⚙️</button>
+
+    <!-- PANNEAU HISTORIQUE (GAUCHE) -->
+    <div id="history-panel" class="side-panel left">
+        <div class="panel-header">
+            <h3>Historique</h3>
+            <p>Mémoire de session</p>
+        </div>
+        <div id="history-content" class="history-content">
+            <!-- Rempli par script.js -->
+        </div>
+    </div>
+
+    <!-- PANNEAU PARAMÈTRES (DROITE) -->
+    <div id="settings-panel" class="side-panel right">
+        <h3>Paramètres Ender</h3>
+
+        <div class="setting-group">
+            <label>🧠 Cerveau Principal (Génération)</label>
+            <select id="select-llm"><option>Chargement...</option></select>
+        </div>
+
+        <!-- NOUVEAU : Expert Émotion -->
+        <div class="setting-group">
+            <label>❤️ Expert Émotion (Sentiment)</label>
+            <select id="select-emotion"><option>Chargement...</option></select>
+        </div>
+
+        <div class="setting-group">
+            <label>👁️ Cerveau Vision (Analyse Image)</label>
+            <select id="select-vision-text"><option>Chargement...</option></select>
+        </div>
+
+        <div class="setting-group">
+            <label>🔭 Projecteur Vision (mmproj)</label>
+            <select id="select-vision-proj"><option>Chargement...</option></select>
+        </div>
+
+        <div class="setting-group">
+            <label>💬 Format de Chat Vision</label>
+            <select id="select-format">
+                <option value="llava-1.5" selected>LLaVA 1.5 (JoyCaption)</option>
+                <option value="moondream">Moondream</option>
+            </select>
+        </div>
+
+        <!-- Toggle Sonore -->
+        <div class="setting-group checkbox-wrapper">
+            <label class="switch">
+                <input type="checkbox" id="check-sound" checked>
+                <span class="slider"></span>
+            </label>
+            <span class="label-text">Sons Animalese</span>
+        </div>
+
+        <button id="apply-settings">APPLIQUER LES RÉGLAGES</button>
+        <div id="settings-status"></div>
+    </div>
+
+    <!-- APPLICATION CENTRALE -->
+    <div class="main-wrapper">
+        <div id="app" class="content">
+
+            <!-- JAUGE D'HUMEUR -->
+            <div class="mood-header">
+                <div class="mood-title">Humeur d'Ender</div>
+                <div class="mood-bar">
+                    <div id="mood-filler" class="mood-filler"></div>
+                </div>
+            </div>
+
+            <!-- VISAGE -->
+            <div class="face">
+                <div class="eyes">
+                    <div class="eye left"></div>
+                    <div class="eye right"></div>
+                </div>
+                <div id="mouth" class="mouth"></div>
+            </div>
+
+            <!-- ZONE DE DISCUSSION -->
+            <div id="display-area" class="display-area">
+                Bonjour ! Je suis Ender. <br>
+                Glisse un fichier sur moi ou utilise le bouton 📎. <br>
+                Je peux analyser des sites webs si tu m'envoies un lien !
+            </div>
+
+            <!-- APERÇU FICHIER / IMAGE -->
+            <div id="preview-container" class="preview-container" style="display: none;">
+                <div class="preview-wrapper">
+                    <img id="img-preview" src="" style="display: none;">
+
+                    <div id="file-info-preview" style="display: none;">
+                        <span class="file-icon">📄</span>
+                        <span id="file-name-text">Document.pdf</span>
+                    </div>
+
+                    <div id="cancel-img" class="cancel-img" title="Annuler">✖</div>
+                </div>
+            </div>
+
+            <!-- BARRE DE SAISIE -->
+            <div class="input-bar">
+                <label for="file-input" class="vision-btn" title="Joindre un fichier">
+                    📎
+                </label>
+                <input type="file" id="file-input" style="display: none;">
+
+                <input type="text" id="user-input" placeholder="Pose-moi une question ou envoie une URL..." autofocus>
+
+                <button id="action-btn" class="send-mode">ENVOYER</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
